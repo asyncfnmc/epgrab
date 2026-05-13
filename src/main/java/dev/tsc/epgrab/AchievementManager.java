@@ -91,7 +91,8 @@ public final class AchievementManager {
         new AchievementDefinition("kismets_used_1000", Category.KISMETS_USED, 1_000, IconKind.KISMET, "Destiny Gambler", "Use 1,000 Kismet Feathers."),
 
         new AchievementDefinition("met_asyncfn", Category.SOCIAL, 0, IconKind.ASYNCFN_HEAD, "Interdimensionally Bitflipped", "Share a lobby with asyncfn."),
-        new AchievementDefinition("met_milodamonke", Category.SOCIAL, 0, IconKind.MILO_HEAD, "idk i just work here", "Share a lobby with MiloDaMonke.")
+        new AchievementDefinition("met_milodamonke", Category.SOCIAL, 0, IconKind.MILO_HEAD, "idk i just work here", "Share a lobby with MiloDaMonke."),
+        new AchievementDefinition("really_creative_mind", Category.SOCIAL, 0, IconKind.REALLY_CREATIVE_MIND, "Really Creative Mind", "You contributed an idea that made it into the mod! Congrats!")
     );
 
     private static SaveData data = new SaveData();
@@ -169,15 +170,20 @@ public final class AchievementManager {
 
         boolean changed = false;
         for (PlayerListEntry entry : networkHandler.getPlayerList()) {
-            if (CreatorBadge.PRIMARY_CREATOR_UUID.equals(entry.getProfile().id()) && !isUnlocked("met_asyncfn")) {
+            if (CreatorBadge.ASYNCFN_UUID.equals(entry.getProfile().id()) && !isUnlocked("met_asyncfn")) {
                 unlock(getAchievement("met_asyncfn"));
                 changed = true;
             }
 
-            if (CreatorBadge.SECONDARY_CREATOR_UUID.equals(entry.getProfile().id()) && !isUnlocked("met_milodamonke")) {
+            if (CreatorBadge.MILODAMONKE_UUID.equals(entry.getProfile().id()) && !isUnlocked("met_milodamonke")) {
                 unlock(getAchievement("met_milodamonke"));
                 changed = true;
             }
+        }
+
+        if (client.player != null && CreatorBadge.isReallyCreativeMind(client.player.getUuid()) && !isUnlocked("really_creative_mind")) {
+            unlock(getAchievement("really_creative_mind"));
+            changed = true;
         }
 
         if (changed) {
@@ -247,11 +253,18 @@ public final class AchievementManager {
 
     public static int unlockedCount() {
         initialize();
-        return data.unlocked.size();
+
+        int count = 0;
+        for (AchievementDefinition achievement : achievements()) {
+            if (data.unlocked.contains(achievement.id())) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public static int totalCount() {
-        return ACHIEVEMENTS.size();
+        return achievements().size();
     }
 
     public static boolean isUnlocked(String id) {
@@ -260,7 +273,17 @@ public final class AchievementManager {
     }
 
     public static List<AchievementDefinition> achievements() {
-        return ACHIEVEMENTS;
+        if (isCurrentPlayerReallyCreativeMind()) {
+            return ACHIEVEMENTS;
+        }
+
+        List<AchievementDefinition> available = new java.util.ArrayList<>(ACHIEVEMENTS.size());
+        for (AchievementDefinition achievement : ACHIEVEMENTS) {
+            if (!achievement.id().equals("really_creative_mind")) {
+                available.add(achievement);
+            }
+        }
+        return List.copyOf(available);
     }
 
     public static ItemStack createDisplayStack(AchievementDefinition achievement) {
@@ -269,8 +292,9 @@ public final class AchievementManager {
             case DECOY -> new ItemStack(Items.SNOWBALL);
             case SUPERBOOM -> new ItemStack(Items.TNT);
             case KISMET -> new ItemStack(Items.FEATHER);
-            case ASYNCFN_HEAD -> createCreatorHead(CreatorBadge.PRIMARY_CREATOR_UUID);
-            case MILO_HEAD -> createCreatorHead(CreatorBadge.SECONDARY_CREATOR_UUID);
+            case ASYNCFN_HEAD -> createCreatorHead(CreatorBadge.ASYNCFN_UUID);
+            case MILO_HEAD -> createCreatorHead(CreatorBadge.MILODAMONKE_UUID);
+            case REALLY_CREATIVE_MIND -> new ItemStack(Items.PAINTING);
         };
     }
 
@@ -278,6 +302,11 @@ public final class AchievementManager {
         ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
         stack.set(DataComponentTypes.PROFILE, ProfileComponent.ofDynamic(uuid));
         return stack;
+    }
+
+    private static boolean isCurrentPlayerReallyCreativeMind() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        return client != null && client.player != null && CreatorBadge.isReallyCreativeMind(client.player.getUuid());
     }
 
     private static void reconcileMilestones() {
@@ -458,7 +487,8 @@ public final class AchievementManager {
         SUPERBOOM,
         KISMET,
         ASYNCFN_HEAD,
-        MILO_HEAD
+        MILO_HEAD,
+        REALLY_CREATIVE_MIND
     }
 
     private static final class SaveData {
