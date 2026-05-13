@@ -1,0 +1,30 @@
+# Gradle
+.gradle/
+build/
+out/
+classes/
+
+# Fabric / Minecraft dev runtime
+run/
+logs/
+crash-reports/
+
+# Java
+*.class
+hs_err_pid*
+replay_pid*
+
+# IDEs and editors
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.factorypath
+
+# OS files
+.DS_Store
+Thumbs.db

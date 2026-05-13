@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "dev.tsc.epgrab.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ClientPlayerInteractionManagerMixin",
+    "PlayerEntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

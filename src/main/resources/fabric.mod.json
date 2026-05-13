@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "epgrab",
+  "version": "${version}",
+  "name": "epgrab",
+  "description": "Client-side Hypixel SkyBlock item grabber with keybinds and low-stock alerts.",
+  "icon": "assets/epgrab/icon.png",
+  "authors": [
+    "asyncfn"
+  ],
+  "contributors": [
+    "MiloDaMonke (inspiration)"
+  ],
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.tsc.epgrab.EpGrabClient"
+    ],
+    "modmenu": [
+      "dev.tsc.epgrab.EpGrabModMenu"
+    ]
+  },
+  "mixins": [
+    "epgrab.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.2",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "modmenu": ">=17.0.0"
+  }
+}
