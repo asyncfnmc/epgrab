@@ -13,14 +13,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerEntityRendererMixin {
     @Inject(method = "updateRenderState(Lnet/minecraft/entity/PlayerLikeEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V", at = @At("TAIL"))
     private void epgrab$appendCreatorBadge(PlayerLikeEntity player, PlayerEntityRenderState state, float tickDelta, CallbackInfo ci) {
-        if (!CreatorBadge.isCreator(player.getUuid())) {
+        if (!CreatorBadge.isCreator(player.getUuid()) && !CreatorBadge.isReallyCreativeMind(player.getUuid())) {
             return;
         }
 
         if (state.displayName != null) {
-            state.displayName = CreatorBadge.appendBadge(state.displayName);
+            state.displayName = CreatorBadge.appendBadge(player.getUuid(), state.displayName);
         } else if (state.playerName != null) {
-            state.playerName = CreatorBadge.appendBadge(state.playerName);
+            state.playerName = CreatorBadge.appendBadge(player.getUuid(), state.playerName);
         }
     }
 }
